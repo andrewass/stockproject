@@ -8,13 +8,11 @@ import io.mockk.impl.annotations.MockK
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.http.HttpMethod
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.client.RestTemplate
 
-@SpringBootTest
 class StockConsumerTest {
 
     @MockK
@@ -38,7 +36,7 @@ class StockConsumerTest {
     }
 
     @Test
-    fun shouldReturnExchangeListWhenUnsuccessful(){
+    fun shouldReturnExchangeListWhenUnsuccessful() {
         every {
             restTemplate.exchange(EXCHANGE_URL, HttpMethod.GET, any(), String::class.java)
         } returns ResponseEntity(HttpStatus.UNAUTHORIZED)
