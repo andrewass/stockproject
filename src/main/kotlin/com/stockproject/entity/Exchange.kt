@@ -1,22 +1,32 @@
 package com.stockproject.entity
 
-import javax.persistence.Entity
-import javax.persistence.GeneratedValue
-import javax.persistence.Id
-import javax.persistence.Table
+import com.stockproject.entity.enum.ExchangeType
+import javax.persistence.*
 
 @Entity
 @Table(name = "T_EXCHANGE")
 class Exchange(
         @Id
         @GeneratedValue
-        val id : Long? = null,
+        val id: Long? = null,
 
-        val exchangeName : String = "",
+        val exchangeName: String = "",
 
-        val code : String = "",
+        val code: String = "",
 
-        val currency : String = "",
+        val currency: String = "",
 
-        val isActive : Boolean = true
-)
+        @Enumerated(EnumType.STRING)
+        val exchangeType: ExchangeType? = null
+) {
+
+    override fun equals(other: Any?): Boolean {
+        if (other is Exchange) {
+            return other.code == code
+                    && other.currency == currency
+                    && other.exchangeName == exchangeName
+                    && other.exchangeType == exchangeType
+        }
+        return false
+    }
+}

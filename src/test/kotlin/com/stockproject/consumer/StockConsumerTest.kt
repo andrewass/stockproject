@@ -1,6 +1,6 @@
 package com.stockproject.consumer
 
-import com.stockproject.util.EXCHANGE_URL
+import com.stockproject.util.STOCK_EXCHANGE_URL
 import io.mockk.MockKAnnotations
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -13,35 +13,35 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.client.RestTemplate
 
-class StockConsumerTest {
+internal class StockConsumerTest {
 
     @MockK
-    lateinit var restTemplate: RestTemplate
+    private lateinit var restTemplate: RestTemplate
 
     @InjectMockKs
-    lateinit var stockConsumer: StockConsumer
+    private lateinit var stockConsumer: StockConsumer
 
     @BeforeEach
-    fun setUp() = MockKAnnotations.init(this)
+    private fun setUp() = MockKAnnotations.init(this)
 
     @Test
-    fun shouldReturnExchangeListWhenSuccessful() {
+    fun `should return exchange list when successful`() {
         every {
-            restTemplate.exchange(EXCHANGE_URL, HttpMethod.GET, any(), String::class.java)
+            restTemplate.exchange(STOCK_EXCHANGE_URL, HttpMethod.GET, any(), String::class.java)
         } returns ResponseEntity(getResponseBody(), HttpStatus.OK)
 
-        val exchangeList = stockConsumer.getExchanges()
+        val exchangeList = stockConsumer.getStockExchanges()
 
         assertEquals(4, exchangeList.size)
     }
 
     @Test
-    fun shouldReturnExchangeListWhenUnsuccessful() {
+    fun `should return empty list when unsuccessful`() {
         every {
-            restTemplate.exchange(EXCHANGE_URL, HttpMethod.GET, any(), String::class.java)
+            restTemplate.exchange(STOCK_EXCHANGE_URL, HttpMethod.GET, any(), String::class.java)
         } returns ResponseEntity(HttpStatus.UNAUTHORIZED)
 
-        val exchangeList = stockConsumer.getExchanges()
+        val exchangeList = stockConsumer.getStockExchanges()
 
         assertEquals(true, exchangeList.isEmpty())
     }

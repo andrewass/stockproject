@@ -2,11 +2,24 @@ package com.stockproject.util
 
 import org.springframework.http.HttpHeaders
 import org.springframework.http.MediaType
+import org.springframework.web.util.UriComponentsBuilder
 
-const val BASE_URL = "https://finnhub.io/api/v1/stock/"
 
-const val EXCHANGE_URL = "$BASE_URL+exchange?token="
+const val BASE_URL = "https://finnhub.io/api/v1/"
+const val TOKEN_KEY = "token"
 
+val TOKEN_VALUE : String = System.getenv("FINNHUB_API_KEY")
+
+val STOCK_EXCHANGE_URL = UriComponentsBuilder
+        .fromUriString(BASE_URL + "stock/exchange")
+        .queryParam(TOKEN_KEY, TOKEN_VALUE)
+        .build().toUriString()
+
+
+val CRYPTO_EXCHANGE_URL = UriComponentsBuilder
+        .fromUriString(BASE_URL + "crypto/exchange")
+        .queryParam(TOKEN_KEY, TOKEN_VALUE)
+        .build().toUriString()
 
 fun createHeaders(): HttpHeaders {
     val headers = HttpHeaders()

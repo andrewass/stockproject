@@ -1,7 +1,9 @@
 package com.stockproject.consumer
 
 import com.stockproject.entity.Exchange
-import com.stockproject.util.EXCHANGE_URL
+import com.stockproject.entity.enum.ExchangeType
+import com.stockproject.util.CRYPTO_EXCHANGE_URL
+import com.stockproject.util.STOCK_EXCHANGE_URL
 import com.stockproject.util.createHeaders
 import org.json.JSONArray
 import org.slf4j.LoggerFactory
@@ -17,31 +19,55 @@ class StockConsumer @Autowired constructor(
 ) {
     private val log = LoggerFactory.getLogger(StockConsumer::class.java)
 
-    fun getExchanges(): List<Exchange> {
-        val httpEntity = HttpEntity("body", createHeaders())
-
-        val response = restTemplate.exchange(EXCHANGE_URL,
-                HttpMethod.GET,
-                httpEntity,
-                String::class.java)
+    fun getStockExchanges(): List<Exchange> {
+        val response = exchange(STOCK_EXCHANGE_URL)
 
         return if (response.statusCode.is2xxSuccessful) {
-            convertToExchangeList(response.body!!)
+            convertToStockExchangeList(response.body!!)
         } else {
-            log.error("Unable to fetch static items : Statuscode ${response.statusCode}")
+            log.error("Unable fetch to stock exchanges : Statuscode ${response.statusCode}")
             emptyList()
         }
     }
 
-    private fun convertToExchangeList(responseBody: String): List<Exchange> {
+    fun getCryptoExchanges(): List<Exchange> {
+        val response = exchange(CRYPTO_EXCHANGE_URL)
+
+        return if (response.statusCode.is2xxSuccessful) {
+            convertToCryptoExchangeList(response.body!!)
+        } else {
+            log.error("Unable to stock exchanges : Statuscode ${response.statusCode}")
+            emptyList()
+        }
+    }
+
+    private fun exchange(url: String) = restTemplate.exchange(url,
+            HttpMethod.GET,
+            HttpEntity("body", createHeaders()),
+            String::class.java)
+
+
+    private fun convertToStockExchangeList(responseBody: String): List<Exchange> {
         val exchangeList = mutableListOf<Exchange>()
         val jsonArray = JSONArray(responseBody)
         for (i in 0 until jsonArray.length()) {
             val jsonExchange = jsonArray.getJSONObject(i)
             exchangeList.add(Exchange(code = jsonExchange.getString("code"),
                     currency = jsonExchange.getString("currency"),
-                    exchangeName = jsonExchange.getString("name")))
+                    exchangeName = jsonExchange.getString("name"),
+                    exchangeType = ExchangeType.STOCK))
         }
         return exchangeList
     }
+
+    private fun convertToCryptoExchangeList(responseBody: String): List<Exchange> {
+        val exchangeList = mutableListOf<Exchange>()
+        val jsonArray = JSONArray(responseBody)
+        for (i in 0 until jsonArray.length()) {
+            val code = jsonArray.getString(i)
+            exchangeList.add(Exchange(code = code, exchangeType = ExchangeType.CRYPTO))
+        }
+        return exchangeList
+    }
+
 }
