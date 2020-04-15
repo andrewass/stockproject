@@ -1,4 +1,4 @@
-package com.stockproject.util
+package com.stockproject.consumer.util
 
 import org.springframework.http.HttpHeaders
 import org.springframework.http.MediaType

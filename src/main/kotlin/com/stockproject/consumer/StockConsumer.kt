@@ -2,9 +2,9 @@ package com.stockproject.consumer
 
 import com.stockproject.entity.Exchange
 import com.stockproject.entity.enum.ExchangeType
-import com.stockproject.util.CRYPTO_EXCHANGE_URL
-import com.stockproject.util.STOCK_EXCHANGE_URL
-import com.stockproject.util.createHeaders
+import com.stockproject.consumer.util.CRYPTO_EXCHANGE_URL
+import com.stockproject.consumer.util.STOCK_EXCHANGE_URL
+import com.stockproject.consumer.util.createHeaders
 import org.json.JSONArray
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired

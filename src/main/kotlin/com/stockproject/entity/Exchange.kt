@@ -18,15 +18,4 @@ class Exchange(
 
         @Enumerated(EnumType.STRING)
         val exchangeType: ExchangeType? = null
-) {
-
-    override fun equals(other: Any?): Boolean {
-        if (other is Exchange) {
-            return other.code == code
-                    && other.currency == currency
-                    && other.exchangeName == exchangeName
-                    && other.exchangeType == exchangeType
-        }
-        return false
-    }
-}
+)
