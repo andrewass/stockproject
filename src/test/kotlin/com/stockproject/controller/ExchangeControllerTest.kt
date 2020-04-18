@@ -1,6 +1,7 @@
 package com.stockproject.controller
 
 import com.stockproject.entity.Exchange
+import com.stockproject.entity.Symbol
 import com.stockproject.service.StockService
 import io.mockk.every
 import io.mockk.mockk
@@ -27,6 +28,8 @@ internal class ExchangeControllerTest {
 
     private val stockExchangeList = listOf(Exchange(code = "BE"), Exchange(code = "NO"),
             Exchange(code = "US"), Exchange(code = "JAP"))
+
+    private val symbolList = listOf(Symbol(symbol = "A"), Symbol(symbol = "B"), Symbol(symbol =  "C"))
 
     @TestConfiguration
     class TestConfig {
@@ -62,5 +65,19 @@ internal class ExchangeControllerTest {
                 .andExpect(jsonPath("$[1].code").value("Bitmex"))
                 .andExpect(jsonPath("$[2].code").value("OKEX"))
                 .andExpect(jsonPath("$[3].code").value("KRAKEN"))
+    }
+
+    @Test
+    fun `should return expected status and content of exchange symbols`(){
+        val builder = MockMvcRequestBuilders.get("/exchange/symbols/US")
+
+        every { stockService.getStockSymbols("US") } returns symbolList
+
+        mockMvc.perform(builder)
+                .andExpect(status().isOk)
+                .andExpect(content().contentType("application/json"))
+                .andExpect(jsonPath("$[0].symbol").value("A"))
+                .andExpect(jsonPath("$[1].symbol").value("B"))
+                .andExpect(jsonPath("$[2].symbol").value("C"))
     }
 }

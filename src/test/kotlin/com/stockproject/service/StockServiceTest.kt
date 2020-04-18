@@ -3,6 +3,7 @@ package com.stockproject.service
 import com.stockproject.consumer.StockConsumer
 import com.stockproject.entity.Exchange
 import com.stockproject.repository.ExchangeRepository
+import com.stockproject.repository.SymbolRepository
 import io.mockk.MockKAnnotations
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -12,10 +13,13 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 
-internal class ExchangeServiceTest {
+internal class StockServiceTest {
 
     @MockK(relaxed = true)
     private lateinit var exchangeRepository: ExchangeRepository
+
+    @MockK
+    private lateinit var symbolRepository: SymbolRepository
 
     @MockK
     private lateinit var stockConsumer: StockConsumer

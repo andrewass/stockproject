@@ -1,6 +1,7 @@
 package com.stockproject.controller
 
 import com.stockproject.entity.Exchange
+import com.stockproject.entity.Symbol
 import com.stockproject.service.StockService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
@@ -29,7 +30,8 @@ class ExchangeController @Autowired constructor(
     }
 
     @GetMapping("/symbols/{exchange}")
-    fun getSymbols(@PathVariable("exchange") exchange : String){
+    fun getSymbols(@PathVariable("exchange") exchange: String): ResponseEntity<List<Symbol>> {
         val symbols = stockService.getStockSymbols(exchange)
+        return ResponseEntity(symbols, HttpStatus.OK)
     }
 }

@@ -41,6 +41,17 @@ internal class StockConsumerTest {
     }
 
     @Test
+    fun `should return empty stock symbol list when unsuccessful`() {
+        every {
+            restTemplate.exchange(stockSymbolURI, HttpMethod.GET, any(), String::class.java)
+        } returns ResponseEntity(HttpStatus.UNAUTHORIZED)
+
+        val symbolList = stockConsumer.getStockSymbols("US")
+
+        assertEquals(true, symbolList.isEmpty())
+    }
+
+    @Test
     fun `should return stock exchange list when successful`() {
         every {
             restTemplate.exchange(STOCK_EXCHANGE_URL, HttpMethod.GET, any(), String::class.java)
