@@ -1,10 +1,9 @@
 package com.stockproject.consumer
 
+import com.stockproject.consumer.util.*
 import com.stockproject.entity.Exchange
+import com.stockproject.entity.Symbol
 import com.stockproject.entity.enum.ExchangeType
-import com.stockproject.consumer.util.CRYPTO_EXCHANGE_URL
-import com.stockproject.consumer.util.STOCK_EXCHANGE_URL
-import com.stockproject.consumer.util.createHeaders
 import org.json.JSONArray
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
@@ -25,7 +24,7 @@ class StockConsumer @Autowired constructor(
         return if (response.statusCode.is2xxSuccessful) {
             convertToStockExchangeList(response.body!!)
         } else {
-            log.error("Unable fetch to stock exchanges : Statuscode ${response.statusCode}")
+            log.error("Unable to fetch stock exchanges : Statuscode ${response.statusCode}")
             emptyList()
         }
     }
@@ -36,23 +35,49 @@ class StockConsumer @Autowired constructor(
         return if (response.statusCode.is2xxSuccessful) {
             convertToCryptoExchangeList(response.body!!)
         } else {
-            log.error("Unable to stock exchanges : Statuscode ${response.statusCode}")
+            log.error("Unable to fetch crypto exchanges : Statuscode ${response.statusCode}")
             emptyList()
         }
     }
 
-    private fun exchange(url: String) = restTemplate.exchange(url,
-            HttpMethod.GET,
-            HttpEntity("body", createHeaders()),
-            String::class.java)
+    fun getStockSymbols(exchange: String): List<Symbol> {
+        val response = exchange(STOCK_SYMBOL_URL, Pair("exchange", exchange))
 
+        return if (response.statusCode.is2xxSuccessful) {
+            convertToStockSymbolList(response.body!!)
+        } else {
+            log.error("Unable to fetch stock symbols : Statuscode ${response.statusCode}")
+            emptyList()
+        }
+    }
+
+    private fun exchange(url: String, vararg parameters: Pair<String, String>) =
+            restTemplate.exchange(createURI(url, *parameters),
+                    HttpMethod.GET,
+                    HttpEntity("body", createHeaders()),
+                    String::class.java)
+
+    private fun convertToStockSymbolList(responseBody: String): List<Symbol> {
+        val symbolList = mutableListOf<Symbol>()
+        val jsonArray = JSONArray(responseBody)
+        for (i in 0 until jsonArray.length()) {
+            val jsonSymbol = jsonArray.getJSONObject(i)
+            symbolList.add(Symbol(
+                    description = jsonSymbol.getString("description"),
+                    displaySymbol = jsonSymbol.getString("displaySymbol"),
+                    symbol = jsonSymbol.getString("symbol")
+            ))
+        }
+        return symbolList
+    }
 
     private fun convertToStockExchangeList(responseBody: String): List<Exchange> {
         val exchangeList = mutableListOf<Exchange>()
         val jsonArray = JSONArray(responseBody)
         for (i in 0 until jsonArray.length()) {
             val jsonExchange = jsonArray.getJSONObject(i)
-            exchangeList.add(Exchange(code = jsonExchange.getString("code"),
+            exchangeList.add(Exchange(
+                    code = jsonExchange.getString("code"),
                     currency = jsonExchange.getString("currency"),
                     exchangeName = jsonExchange.getString("name"),
                     exchangeType = ExchangeType.STOCK))
@@ -69,5 +94,6 @@ class StockConsumer @Autowired constructor(
         }
         return exchangeList
     }
+
 
 }

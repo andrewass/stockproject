@@ -1,7 +1,7 @@
 package com.stockproject.controller
 
 import com.stockproject.entity.Exchange
-import com.stockproject.service.ExchangeService
+import com.stockproject.service.StockService
 import io.mockk.every
 import io.mockk.mockk
 import org.junit.jupiter.api.Test
@@ -20,7 +20,7 @@ internal class ExchangeControllerTest {
     private lateinit var mockMvc: MockMvc
 
     @Autowired
-    private lateinit var exchangeService: ExchangeService
+    private lateinit var stockService: StockService
 
     private val cryptoExchangeList = listOf(Exchange(code = "GEMINI"), Exchange(code = "Bitmex"),
             Exchange(code = "OKEX"), Exchange(code = "KRAKEN"))
@@ -31,14 +31,14 @@ internal class ExchangeControllerTest {
     @TestConfiguration
     class TestConfig {
         @Bean
-        fun exchangeService() = mockk<ExchangeService>()
+        fun exchangeService() = mockk<StockService>()
     }
 
     @Test
     fun `should return expected status and content of stock exchanges`() {
         val builder = MockMvcRequestBuilders.get("/exchange/stock-exchanges")
 
-        every { exchangeService.getStockExchanges() } returns stockExchangeList
+        every { stockService.getStockExchanges() } returns stockExchangeList
 
         mockMvc.perform(builder)
                 .andExpect(status().isOk)
@@ -53,7 +53,7 @@ internal class ExchangeControllerTest {
     fun `should return expected status and content of crypto exchanges`() {
         val builder = MockMvcRequestBuilders.get("/exchange/crypto-exchanges")
 
-        every { exchangeService.getCryptoExchanges() } returns cryptoExchangeList
+        every { stockService.getCryptoExchanges() } returns cryptoExchangeList
 
         mockMvc.perform(builder)
                 .andExpect(status().isOk)

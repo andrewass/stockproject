@@ -21,7 +21,7 @@ internal class ExchangeServiceTest {
     private lateinit var stockConsumer: StockConsumer
 
     @InjectMockKs
-    private lateinit var exchangeService: ExchangeService
+    private lateinit var stockService: StockService
 
     @BeforeEach
     private fun setUp() = MockKAnnotations.init(this)
@@ -31,7 +31,7 @@ internal class ExchangeServiceTest {
         every { stockConsumer.getStockExchanges() } returns getStockExchangeResponseList()
         every { exchangeRepository.findAll() } returns getStockExchangeResponseList()
 
-        val exchangeList = exchangeService.getStockExchanges()
+        val exchangeList = stockService.getStockExchanges()
 
         verify(exactly = 3) { exchangeRepository.existsByCode(any()) }
 
@@ -43,7 +43,7 @@ internal class ExchangeServiceTest {
         every { stockConsumer.getCryptoExchanges() } returns getCryptoExchangeResponseList()
         every { exchangeRepository.findAll() } returns getCryptoExchangeResponseList()
 
-        val exchangeList = exchangeService.getCryptoExchanges()
+        val exchangeList = stockService.getCryptoExchanges()
 
         verify(exactly = 4) { exchangeRepository.existsByCode(any()) }
 

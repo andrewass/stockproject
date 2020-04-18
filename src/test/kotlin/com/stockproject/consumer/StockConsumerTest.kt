@@ -2,6 +2,8 @@ package com.stockproject.consumer
 
 import com.stockproject.consumer.util.CRYPTO_EXCHANGE_URL
 import com.stockproject.consumer.util.STOCK_EXCHANGE_URL
+import com.stockproject.consumer.util.STOCK_SYMBOL_URL
+import com.stockproject.consumer.util.createURI
 import io.mockk.MockKAnnotations
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -24,6 +26,19 @@ internal class StockConsumerTest {
 
     @BeforeEach
     private fun setUp() = MockKAnnotations.init(this)
+
+    private val stockSymbolURI = createURI(STOCK_SYMBOL_URL, Pair("exchange", "US"))
+
+    @Test
+    fun `should return stock symbol list when successful`() {
+        every {
+            restTemplate.exchange(stockSymbolURI, HttpMethod.GET, any(), String::class.java)
+        } returns ResponseEntity(getStockSymbolResponseBody(), HttpStatus.OK)
+
+        val symbolList = stockConsumer.getStockSymbols("US")
+
+        assertEquals(4, symbolList.size)
+    }
 
     @Test
     fun `should return stock exchange list when successful`() {
@@ -69,6 +84,12 @@ internal class StockConsumerTest {
         assertEquals(true, exchangeList.isEmpty())
     }
 
+    private fun getStockSymbolResponseBody() =
+            "[{description:AGILENT_TECHNOLOGIES_INC,displaySymbol:A,symbol:A}," +
+                    "{description:ALCOA_CORP,displaySymbol:AA,symbol:AA}," +
+                    "{description:PERTH_MINT_PHYSICAL_GOLD_ETF,displaySymbol:AAAU,symbol:AAAU}," +
+                    "{description:ATA_CREATIVITY_GLOBAL,displaySymbol:AACG,symbol:AACG}]"
+
     private fun getStockExchangeResponseBody() =
             "[{code:mutualFund,currency:USD,name:US_Mutual_funds}," +
                     "{code:indices,currency:USD,name:World_Indices}," +
@@ -76,5 +97,4 @@ internal class StockConsumerTest {
                     "{code:BR,currency:EUR,name:NYSE}]"
 
     private fun getCryptoExchangeResponseBody() = "[GEMINI,KRAKEN,COINBASE]"
-
 }
