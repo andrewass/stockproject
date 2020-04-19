@@ -1,5 +1,6 @@
 package com.stockproject.entity
 
+import com.fasterxml.jackson.annotation.JsonIgnore
 import com.stockproject.entity.enum.ExchangeType
 import javax.persistence.*
 
@@ -18,4 +19,8 @@ class Exchange(
 
         @Enumerated(EnumType.STRING)
         val exchangeType: ExchangeType? = null
-)
+) {
+        @JsonIgnore
+        @OneToMany(mappedBy = "exchange", cascade = [CascadeType.ALL])
+        val symbols = mutableListOf<Symbol>()
+}

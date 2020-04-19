@@ -10,7 +10,7 @@ interface ExchangeRepository : JpaRepository<Exchange, Long> {
 
     fun existsByCode(code: String): Boolean
 
-    fun findAllByExchangeType(exchangeType: ExchangeType)
+    fun findByCode(code: String) : Exchange?
 
 }
 

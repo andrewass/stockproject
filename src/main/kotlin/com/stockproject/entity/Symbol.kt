@@ -1,9 +1,7 @@
 package com.stockproject.entity
 
-import javax.persistence.Entity
-import javax.persistence.GeneratedValue
-import javax.persistence.Id
-import javax.persistence.Table
+import com.fasterxml.jackson.annotation.JsonIgnore
+import javax.persistence.*
 
 @Entity
 @Table(name = "T_SYMBOL")
@@ -16,5 +14,8 @@ class Symbol(
 
         val displaySymbol : String = "",
 
-        val description : String = ""
+        val description : String = "",
+
+        @ManyToOne
+        var exchange : Exchange? = null
 )
