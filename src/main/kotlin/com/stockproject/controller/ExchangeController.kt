@@ -29,7 +29,7 @@ class ExchangeController @Autowired constructor(
         return ResponseEntity(cryptoExchanges, HttpStatus.OK)
     }
 
-    @GetMapping("/symbols/{exchange}")
+    @GetMapping("/stock-symbols/{exchange}")
     fun getSymbols(@PathVariable("exchange") exchange: String): ResponseEntity<List<Symbol>> {
         val symbols = stockService.getStockSymbols(exchange)
         val res = ResponseEntity(symbols, HttpStatus.OK)

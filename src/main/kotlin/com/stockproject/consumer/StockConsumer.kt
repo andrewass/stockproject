@@ -40,11 +40,11 @@ class StockConsumer @Autowired constructor(
         }
     }
 
-    fun getStockSymbols(exchange: String): List<Symbol> {
-        val response = exchange(STOCK_SYMBOL_URL, Pair("exchange", exchange))
+    fun getStockSymbols(exchange: Exchange): List<Symbol> {
+        val response = exchange(STOCK_SYMBOL_URL, Pair("exchange", exchange.code))
 
         return if (response.statusCode.is2xxSuccessful) {
-            convertToStockSymbolList(response.body!!)
+            convertToStockSymbolList(response.body!!, exchange)
         } else {
             log.error("Unable to fetch stock symbols : Statuscode ${response.statusCode}")
             emptyList()
@@ -57,7 +57,7 @@ class StockConsumer @Autowired constructor(
                     HttpEntity("body", createHeaders()),
                     String::class.java)
 
-    private fun convertToStockSymbolList(responseBody: String): List<Symbol> {
+    private fun convertToStockSymbolList(responseBody: String, exchange: Exchange): List<Symbol> {
         val symbolList = mutableListOf<Symbol>()
         val jsonArray = JSONArray(responseBody)
         for (i in 0 until jsonArray.length()) {
@@ -65,7 +65,8 @@ class StockConsumer @Autowired constructor(
             symbolList.add(Symbol(
                     description = jsonSymbol.getString("description"),
                     displaySymbol = jsonSymbol.getString("displaySymbol"),
-                    symbol = jsonSymbol.getString("symbol")
+                    symbol = jsonSymbol.getString("symbol"),
+                    exchange = exchange
             ))
         }
         return symbolList
@@ -94,6 +95,4 @@ class StockConsumer @Autowired constructor(
         }
         return exchangeList
     }
-
-
 }

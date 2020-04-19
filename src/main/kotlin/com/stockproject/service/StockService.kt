@@ -16,38 +16,35 @@ class StockService @Autowired constructor(
 ) {
 
     fun getStockExchanges(): List<Exchange> {
-        val exchangeResponse = stockConsumer.getStockExchanges()
-        updatePersistedExchanges(exchangeResponse)
-        return exchangeRepository.findAll()
+        val stockExchangeList = stockConsumer.getStockExchanges()
+        persistNewExchanges(stockExchangeList)
+        return stockExchangeList
     }
 
     fun getCryptoExchanges(): List<Exchange> {
-        val exchangeResponse = stockConsumer.getCryptoExchanges()
-        updatePersistedExchanges(exchangeResponse)
-        return exchangeRepository.findAll()
+        val cryptoExchangeList = stockConsumer.getCryptoExchanges()
+        persistNewExchanges(cryptoExchangeList)
+        return cryptoExchangeList
     }
 
-    fun getStockSymbols(exchange: String): List<Symbol> {
-        val stockSymbols = stockConsumer.getStockSymbols(exchange)
-        val newSymbols = fetchNewSymbols(stockSymbols)
-        persistNewSymbols(newSymbols, exchange)
-        return stockSymbols
-    }
-
-    private fun persistNewSymbols(newSymbols: List<Symbol>, exchangeCode: String){
+    fun getStockSymbols(exchangeCode: String): List<Symbol> {
         val exchange = exchangeRepository.findByCode(exchangeCode) ?: return emptyList()
-        newSymbols.forEach { it.exchange = exchange }
+        val stockSymbolList = stockConsumer.getStockSymbols(exchange)
+        persistNewSymbols(stockSymbolList)
+        return stockSymbolList
+    }
+
+    private fun persistNewSymbols(symbolList: List<Symbol>) {
+        val newSymbols = symbolList
+                .filter { !symbolRepository.existsBySymbol(it.symbol) }
+                .toList()
         symbolRepository.saveAll(newSymbols)
     }
 
-    private fun fetchNewSymbols(symbolResponse: List<Symbol>) = symbolResponse
-            .filter { !symbolRepository.existsBySymbol(it.symbol) }
-            .toList()
-}
-
-private fun updatePersistedExchanges(exchangeResponse: List<Exchange>) {
-    val newExchanges = exchangeResponse.filter { !exchangeRepository.existsByCode(it.code) }
-            .toList()
-    exchangeRepository.saveAll(newExchanges)
-}
+    private fun persistNewExchanges(exchangeList: List<Exchange>) {
+        val newExchanges = exchangeList
+                .filter { !exchangeRepository.existsByCode(it.code) }
+                .toList()
+        exchangeRepository.saveAll(newExchanges)
+    }
 }

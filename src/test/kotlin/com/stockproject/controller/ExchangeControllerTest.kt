@@ -69,7 +69,7 @@ internal class ExchangeControllerTest {
 
     @Test
     fun `should return expected status and content of exchange symbols`(){
-        val builder = MockMvcRequestBuilders.get("/exchange/symbols/US")
+        val builder = MockMvcRequestBuilders.get("/exchange/stock-symbols/US")
 
         every { stockService.getStockSymbols("US") } returns symbolList
 

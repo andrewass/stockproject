@@ -4,6 +4,7 @@ import com.stockproject.consumer.util.CRYPTO_EXCHANGE_URL
 import com.stockproject.consumer.util.STOCK_EXCHANGE_URL
 import com.stockproject.consumer.util.STOCK_SYMBOL_URL
 import com.stockproject.consumer.util.createURI
+import com.stockproject.entity.Exchange
 import io.mockk.MockKAnnotations
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -35,7 +36,7 @@ internal class StockConsumerTest {
             restTemplate.exchange(stockSymbolURI, HttpMethod.GET, any(), String::class.java)
         } returns ResponseEntity(getStockSymbolResponseBody(), HttpStatus.OK)
 
-        val symbolList = stockConsumer.getStockSymbols("US")
+        val symbolList = stockConsumer.getStockSymbols(Exchange(code = "US"))
 
         assertEquals(4, symbolList.size)
     }
@@ -46,7 +47,7 @@ internal class StockConsumerTest {
             restTemplate.exchange(stockSymbolURI, HttpMethod.GET, any(), String::class.java)
         } returns ResponseEntity(HttpStatus.UNAUTHORIZED)
 
-        val symbolList = stockConsumer.getStockSymbols("US")
+        val symbolList = stockConsumer.getStockSymbols(Exchange(code = "US"))
 
         assertEquals(true, symbolList.isEmpty())
     }
