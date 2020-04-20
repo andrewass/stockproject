@@ -1,6 +1,7 @@
 package com.stockproject.service
 
 import com.stockproject.consumer.StockConsumer
+import com.stockproject.entity.Candle
 import com.stockproject.entity.Exchange
 import com.stockproject.entity.Symbol
 import com.stockproject.repository.ExchangeRepository
@@ -34,6 +35,11 @@ class StockService @Autowired constructor(
         return stockSymbolList
     }
 
+    fun getCandles(symbol: String, days: Long): List<Candle> {
+        val candles = stockConsumer.getStockCandles(symbol, days)
+        return candles
+    }
+
     private fun persistNewSymbols(symbolList: List<Symbol>) {
         val newSymbols = symbolList
                 .filter { !symbolRepository.existsBySymbol(it.symbol) }
@@ -47,4 +53,5 @@ class StockService @Autowired constructor(
                 .toList()
         exchangeRepository.saveAll(newExchanges)
     }
+
 }

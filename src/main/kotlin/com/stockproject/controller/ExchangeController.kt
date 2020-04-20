@@ -1,15 +1,13 @@
 package com.stockproject.controller
 
+import com.stockproject.entity.Candle
 import com.stockproject.entity.Exchange
 import com.stockproject.entity.Symbol
 import com.stockproject.service.StockService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.PathVariable
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
 
 @RestController
 @RequestMapping("/exchange")
@@ -32,7 +30,13 @@ class ExchangeController @Autowired constructor(
     @GetMapping("/stock-symbols/{exchange}")
     fun getSymbols(@PathVariable("exchange") exchange: String): ResponseEntity<List<Symbol>> {
         val symbols = stockService.getStockSymbols(exchange)
-        val res = ResponseEntity(symbols, HttpStatus.OK)
-        return res
+        return ResponseEntity(symbols, HttpStatus.OK)
+    }
+
+    @GetMapping("/stock-candles")
+    fun getStockCandles(@RequestParam("symbol") symbol: String ) ://, @RequestParam("days") days : Int) :
+            ResponseEntity<List<Candle>> {
+        val candles = stockService.getCandles(symbol, 15)
+        return ResponseEntity(candles, HttpStatus.OK)
     }
 }

@@ -1,6 +1,7 @@
 package com.stockproject.consumer
 
 import com.stockproject.consumer.util.*
+import com.stockproject.entity.Candle
 import com.stockproject.entity.Exchange
 import com.stockproject.entity.Symbol
 import com.stockproject.entity.enum.ExchangeType
@@ -11,6 +12,9 @@ import org.springframework.http.HttpEntity
 import org.springframework.http.HttpMethod
 import org.springframework.stereotype.Component
 import org.springframework.web.client.RestTemplate
+import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.ZoneOffset
 
 @Component
 class StockConsumer @Autowired constructor(
@@ -49,6 +53,17 @@ class StockConsumer @Autowired constructor(
             log.error("Unable to fetch stock symbols : Statuscode ${response.statusCode}")
             emptyList()
         }
+    }
+
+    fun getStockCandles(symbol: String, days: Long): List<Candle> {
+        val endDate = LocalDateTime.now()
+        val startDate = endDate.minusDays(days)
+        val response = exchange(STOCK_CANDLE,
+                Pair("symbol", symbol), Pair("resolution", "D"),
+                Pair("from", startDate.toEpochSecond(ZoneOffset.UTC).toString()),
+                Pair("to", endDate.toEpochSecond(ZoneOffset.UTC).toString()))
+
+        return emptyList()
     }
 
     private fun exchange(url: String, vararg parameters: Pair<String, String>) =
@@ -95,4 +110,5 @@ class StockConsumer @Autowired constructor(
         }
         return exchangeList
     }
+
 }

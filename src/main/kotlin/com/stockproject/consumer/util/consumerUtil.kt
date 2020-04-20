@@ -12,6 +12,7 @@ val TOKEN_VALUE: String = System.getenv("FINNHUB_API_KEY")
 val STOCK_EXCHANGE_URL = createURL("stock/exchange")
 val CRYPTO_EXCHANGE_URL = createURL("crypto/exchange")
 val STOCK_SYMBOL_URL = createURL("stock/symbol")
+val STOCK_CANDLE = createURL("stock/candle")
 
 fun createURI(url: String, vararg parameters: Pair<String, String>): String {
     val uriBuilder = URIBuilder(url)
