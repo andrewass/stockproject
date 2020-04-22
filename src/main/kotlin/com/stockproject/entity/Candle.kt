@@ -1,5 +1,6 @@
 package com.stockproject.entity
 
+import java.time.LocalDate
 import javax.persistence.*
 
 @Entity
@@ -9,9 +10,15 @@ class Candle(
         @GeneratedValue
         val id : Long? = null,
 
-        @JoinColumn(name = "SYMBOL")
         @ManyToOne
-        val symbol: Symbol
-){
+        @JoinColumn(name = "SYMBOL")
+        val symbol: Symbol? = null,
 
-}
+        val lowPrice : Double = 0.00,
+
+        val highPrice : Double = 0.00,
+
+        val closingPrice : Double = 0.00,
+
+        val candleDate : LocalDate? = null
+)

@@ -36,8 +36,7 @@ class StockService @Autowired constructor(
     }
 
     fun getCandles(symbol: String, days: Long): List<Candle> {
-        val candles = stockConsumer.getStockCandles(symbol, days)
-        return candles
+        return stockConsumer.getStockCandles(symbol, days)
     }
 
     private fun persistNewSymbols(symbolList: List<Symbol>) {
@@ -53,5 +52,4 @@ class StockService @Autowired constructor(
                 .toList()
         exchangeRepository.saveAll(newExchanges)
     }
-
 }

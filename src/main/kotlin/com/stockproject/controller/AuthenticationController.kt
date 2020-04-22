@@ -4,6 +4,7 @@ import com.stockproject.controller.request.SignInRequest
 import com.stockproject.controller.request.SignOutRequest
 import com.stockproject.controller.request.SignUpRequest
 import com.stockproject.controller.response.SignInResponse
+import com.stockproject.entity.Investment
 import com.stockproject.exception.UsernameNotAvailableException
 import com.stockproject.service.AuthenticationService
 import org.springframework.beans.factory.annotation.Autowired

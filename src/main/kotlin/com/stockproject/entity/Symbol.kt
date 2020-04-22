@@ -1,6 +1,5 @@
 package com.stockproject.entity
 
-import com.fasterxml.jackson.annotation.JsonIgnore
 import javax.persistence.*
 
 @Entity
@@ -8,14 +7,20 @@ import javax.persistence.*
 class Symbol(
         @Id
         @GeneratedValue
-        val id : Long? = null,
+        val id: Long? = null,
 
-        val symbol : String = "",
+        val symbol: String = "",
 
-        val displaySymbol : String = "",
+        val displaySymbol: String = "",
 
-        val description : String = "",
+        val description: String = "",
 
         @ManyToOne
-        var exchange : Exchange? = null
-)
+        var exchange: Exchange? = null
+) {
+    private var hits = 0
+
+    fun addHits() {
+        hits++
+    }
+}

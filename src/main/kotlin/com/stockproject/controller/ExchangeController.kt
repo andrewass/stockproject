@@ -21,6 +21,7 @@ class ExchangeController @Autowired constructor(
         return ResponseEntity(stockExchanges, HttpStatus.OK)
     }
 
+
     @GetMapping("/crypto-exchanges")
     fun getCryptoExchanges(): ResponseEntity<List<Exchange>> {
         val cryptoExchanges = stockService.getCryptoExchanges()
@@ -34,9 +35,9 @@ class ExchangeController @Autowired constructor(
     }
 
     @GetMapping("/stock-candles")
-    fun getStockCandles(@RequestParam("symbol") symbol: String ) ://, @RequestParam("days") days : Int) :
+    fun getStockCandles(@RequestParam("symbol") symbol: String , @RequestParam("days") days : Long) :
             ResponseEntity<List<Candle>> {
-        val candles = stockService.getCandles(symbol, 15)
+        val candles = stockService.getCandles(symbol, days)
         return ResponseEntity(candles, HttpStatus.OK)
     }
 }
