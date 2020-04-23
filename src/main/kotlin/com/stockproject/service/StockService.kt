@@ -35,9 +35,15 @@ class StockService @Autowired constructor(
         return stockSymbolList
     }
 
+    fun getCandlesOfTrendingSymbols(count: Int, days: Long): List<Candle> {
+        val trendingSymbols = symbolRepository.findMostTrendingSymbols(count)
+        return stockConsumer.getStockCandles("", days)
+    }
+
     fun getCandles(symbol: String, days: Long): List<Candle> {
         return stockConsumer.getStockCandles(symbol, days)
     }
+
 
     private fun persistNewSymbols(symbolList: List<Symbol>) {
         val newSymbols = symbolList
@@ -52,4 +58,5 @@ class StockService @Autowired constructor(
                 .toList()
         exchangeRepository.saveAll(newExchanges)
     }
+
 }
