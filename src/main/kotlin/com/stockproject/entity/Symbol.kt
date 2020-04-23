@@ -20,7 +20,7 @@ class Symbol(
 ) {
     private var hits = 0
 
-    fun addHits() {
+    fun addSingleHit() {
         hits++
     }
 }

@@ -40,7 +40,9 @@ class StockService @Autowired constructor(
         return stockConsumer.getStockCandles("", days)
     }
 
-    fun getCandles(symbol: String, days: Long): List<Candle> {
+    fun getCandles(symbolName: String, days: Long): List<Candle> {
+        val symbol = symbolRepository.findBySymbol(symbolName) ?: return emptyList()
+        symbol.addSingleHit()
         return stockConsumer.getStockCandles(symbol, days)
     }
 

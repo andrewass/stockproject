@@ -54,20 +54,29 @@ class StockConsumer @Autowired constructor(
         }
     }
 
-    fun getStockCandles(symbol: String, days: Long): List<Candle> {
+    fun getCandlesFromListOfSymbols(symbols : List<Symbol>, days : Long) : List<Candle> {
+        val candles = mutableListOf<Candle>()
+        symbols.forEach {
+            candles.addAll(getStockCandles(it, days))
+        }
+        return candles
+    }
+
+    fun getStockCandles(symbol: Symbol, days: Long): List<Candle> {
         val endDate = LocalDateTime.now()
         val startDate = endDate.minusDays(days)
         val response = exchange(STOCK_CANDLE,
-                Pair("symbol", symbol), Pair("resolution", "D"),
+                Pair("symbol", symbol.symbol), Pair("resolution", "D"),
                 Pair("from", startDate.toEpochSecond(ZoneOffset.UTC).toString()),
                 Pair("to", endDate.toEpochSecond(ZoneOffset.UTC).toString()))
 
         return if (response.statusCode.is2xxSuccessful) {
             convertToCandles(response.body!!)
         } else {
-            return emptyList()
+            emptyList()
         }
     }
+
 
     private fun exchange(url: String, vararg parameters: Pair<String, String>) =
             restTemplate.exchange(createURI(url, *parameters),

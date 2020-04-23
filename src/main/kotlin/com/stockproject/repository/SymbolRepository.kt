@@ -10,4 +10,6 @@ interface SymbolRepository : JpaRepository<Symbol, Long> {
 
     @Query("SELECT * FROM Symbol s order by s.hits desc limit ?1 ", nativeQuery = true)
     fun findMostTrendingSymbols(count: Int): List<Symbol>
+
+    fun findBySymbol(symbol: String): Symbol?
 }
