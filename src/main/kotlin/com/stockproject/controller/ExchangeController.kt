@@ -15,6 +15,16 @@ class ExchangeController @Autowired constructor(
         private val stockService: StockService
 ) {
 
+    @GetMapping("/populate-stock-exchanges")
+    fun getTrendingStockSymbols(): ResponseEntity<HttpStatus> {
+        val stockExchanges = stockService.getStockExchanges()
+        stockExchanges.forEach {
+            stockService.getStockSymbols(it.code)
+            Thread.sleep(1000L)
+        }
+        return ResponseEntity(HttpStatus.OK)
+    }
+
     @GetMapping("/stock-exchanges")
     fun getStockExchanges(): ResponseEntity<List<Exchange>> {
         val stockExchanges = stockService.getStockExchanges()
