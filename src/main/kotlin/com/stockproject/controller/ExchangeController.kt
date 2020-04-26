@@ -4,6 +4,7 @@ import com.stockproject.entity.Candle
 import com.stockproject.entity.Exchange
 import com.stockproject.entity.Symbol
 import com.stockproject.service.StockService
+import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -14,12 +15,14 @@ import org.springframework.web.bind.annotation.*
 class ExchangeController @Autowired constructor(
         private val stockService: StockService
 ) {
+    private val log = LoggerFactory.getLogger(ExchangeController::class.java)
 
-    @GetMapping("/populate-stock-exchanges")
-    fun getTrendingStockSymbols(): ResponseEntity<HttpStatus> {
+    @GetMapping("/populate-stock-symbols")
+    fun populateStockSymbols(): ResponseEntity<HttpStatus> {
         val stockExchanges = stockService.getStockExchanges()
         stockExchanges.forEach {
-            stockService.getStockSymbols(it.code)
+            val symbols = stockService.getStockSymbols(it.exchangeName)
+            log.info("Fetched ${symbols.size} symbols for exchange ${it.exchangeName}")
             Thread.sleep(1000L)
         }
         return ResponseEntity(HttpStatus.OK)
@@ -38,8 +41,8 @@ class ExchangeController @Autowired constructor(
     }
 
     @GetMapping("/stock-symbols/{exchange}")
-    fun getSymbols(@PathVariable("exchange") exchange: String): ResponseEntity<List<Symbol>> {
-        val symbols = stockService.getStockSymbols(exchange)
+    fun getSymbols(@PathVariable("exchange") exchangeName: String): ResponseEntity<List<Symbol>> {
+        val symbols = stockService.getStockSymbols(exchangeName)
         return ResponseEntity(symbols, HttpStatus.OK)
     }
 
