@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
+import java.sql.Timestamp
 
 @RestController
 @RequestMapping("/exchange")
@@ -21,10 +22,13 @@ class ExchangeController @Autowired constructor(
     fun populateStockSymbols(): ResponseEntity<HttpStatus> {
         val stockExchanges = stockService.getStockExchanges()
         stockExchanges.forEach {
+            val startTime = System.currentTimeMillis()
             val symbols = stockService.getStockSymbols(it.exchangeName)
-            log.info("Fetched ${symbols.size} symbols for exchange ${it.exchangeName}")
+            val totalTime = System.currentTimeMillis() - startTime
+            log.info("Fetched ${symbols.size} symbols for exchange ${it.exchangeName} in ${totalTime/1000L} seconds")
             Thread.sleep(1000L)
         }
+        log.info("Population of stock symbols complete")
         return ResponseEntity(HttpStatus.OK)
     }
 

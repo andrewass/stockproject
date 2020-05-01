@@ -3,7 +3,7 @@ package com.stockproject.entity
 import javax.persistence.*
 
 @Entity
-@Table(name = "T_USER")
+@Table(name = "T_PORTFOLIO")
 class Portfolio(
         @Id
         @GeneratedValue

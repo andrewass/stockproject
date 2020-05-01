@@ -20,7 +20,16 @@ class Exchange(
         @Enumerated(EnumType.STRING)
         val exchangeType: ExchangeType? = null
 ) {
-        @JsonIgnore
-        @OneToMany(mappedBy = "exchange", cascade = [CascadeType.ALL])
-        val symbols = mutableListOf<Symbol>()
+    @JsonIgnore
+    @OneToMany(mappedBy = "exchange", cascade = [CascadeType.ALL])
+    val symbols = mutableListOf<Symbol>()
+
+    override fun equals(other: Any?): Boolean {
+        if (other is Exchange) {
+            return other.exchangeName == exchangeName
+        }
+        return false
+    }
+
+    override fun hashCode() = exchangeName.hashCode()
 }

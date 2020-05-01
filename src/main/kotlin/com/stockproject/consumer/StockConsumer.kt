@@ -20,6 +20,7 @@ class StockConsumer @Autowired constructor(
         private val restTemplate: RestTemplate
 ) {
     private val log = LoggerFactory.getLogger(StockConsumer::class.java)
+    private val noData = "no_data"
 
     fun getStockExchanges(): List<Exchange> {
         val response = exchange(STOCK_EXCHANGE_URL)
@@ -54,14 +55,6 @@ class StockConsumer @Autowired constructor(
         }
     }
 
-    fun getCandlesFromListOfSymbols(symbols : List<Symbol>, days : Long) : List<Candle> {
-        val candles = mutableListOf<Candle>()
-        symbols.forEach {
-            candles.addAll(getStockCandles(it, days))
-        }
-        return candles
-    }
-
     fun getStockCandles(symbol: Symbol, days: Long): List<Candle> {
         val endDate = LocalDateTime.now()
         val startDate = endDate.minusDays(days)
@@ -71,7 +64,7 @@ class StockConsumer @Autowired constructor(
                 Pair("to", endDate.toEpochSecond(ZoneOffset.UTC).toString()))
 
         return if (response.statusCode.is2xxSuccessful) {
-            convertToCandles(response.body!!)
+            convertToCandles(response.body!!, symbol)
         } else {
             emptyList()
         }
@@ -85,9 +78,12 @@ class StockConsumer @Autowired constructor(
                     String::class.java)
 
 
-    private fun convertToCandles(responseBody: String): List<Candle> {
+    private fun convertToCandles(responseBody: String,symbol: Symbol): List<Candle> {
         val candleList = mutableListOf<Candle>()
         val jsonBody = JSONObject(responseBody)
+        if(jsonBody.getString("s") == noData){
+            return candleList
+        }
         val closingPrice = jsonBody.getJSONArray("c")
         val highPrice = jsonBody.getJSONArray("h")
         val lowPrice = jsonBody.getJSONArray("l")
@@ -95,6 +91,7 @@ class StockConsumer @Autowired constructor(
         val count = closingPrice.length()
         for (i in 0 until count) {
             candleList.add(Candle(
+                    symbol = symbol,
                     lowPrice = lowPrice.getDouble(i),
                     highPrice = highPrice.getDouble(i),
                     closingPrice = closingPrice.getDouble(i),

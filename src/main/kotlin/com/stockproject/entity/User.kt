@@ -3,6 +3,7 @@ package com.stockproject.entity
 import javax.persistence.*
 
 @Entity
+@Table(name ="T_USER")
 class User(
         @Id
         @GeneratedValue
