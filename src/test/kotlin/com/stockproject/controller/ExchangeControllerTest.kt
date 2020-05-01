@@ -115,7 +115,7 @@ internal class ExchangeControllerTest {
         val builder = MockMvcRequestBuilders
                 .get("/exchange/stock-candles?symbol=AAPL&days=15")
 
-        every { stockService.getCandles("AAPL", 15) } returns candleList
+        every { stockService.getCandlesForSymbol("AAPL", 15) } returns candleList
 
         mockMvc.perform(builder)
                 .andExpect(content().contentType("application/json"))

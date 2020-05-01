@@ -9,7 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
-import java.sql.Timestamp
 
 @RestController
 @RequestMapping("/exchange")
@@ -60,7 +59,7 @@ class ExchangeController @Autowired constructor(
     @GetMapping("/stock-candles")
     fun getStockCandles(@RequestParam("symbol") symbol: String, @RequestParam("days") days: Long):
             ResponseEntity<List<Candle>> {
-        val candles = stockService.getCandles(symbol, days)
+        val candles = stockService.getCandlesForSymbol(symbol, days)
         return ResponseEntity(candles, HttpStatus.OK)
     }
 }

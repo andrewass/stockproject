@@ -31,8 +31,7 @@ class StockService @Autowired constructor(
     fun getStockSymbols(exchangeName: String): List<Symbol> {
         val exchange = exchangeRepository.findByExchangeName(exchangeName) ?: return emptyList()
         val stockSymbolList = stockConsumer.getStockSymbols(exchange)
-        persistNewSymbols(stockSymbolList, exchange)
-        return stockSymbolList
+        return persistNewSymbols(stockSymbolList, exchange)
     }
 
     fun getCandlesOfTrendingSymbols(count: Int, days: Long): List<Candle> {
@@ -40,17 +39,17 @@ class StockService @Autowired constructor(
         return trendingSymbols.flatMap { stockConsumer.getStockCandles(it, days) }
     }
 
-    fun getCandles(symbolName: String, days: Long): List<Candle> {
+    fun getCandlesForSymbol(symbolName: String, days: Long): List<Candle> {
         val symbol = symbolRepository.findBySymbol(symbolName) ?: return emptyList()
         symbol.addSingleHit()
         return stockConsumer.getStockCandles(symbol, days)
     }
 
-    private fun persistNewSymbols(symbolList: List<Symbol>, exchange : Exchange) {
+    private fun persistNewSymbols(symbolList: List<Symbol>, exchange : Exchange) : List<Symbol> {
         val persistedSymbols = symbolRepository.findAllSymbolsFromExchange(exchange)
         val symbolSet = persistedSymbols.toHashSet()
         symbolSet.addAll(symbolList)
-        symbolRepository.saveAll(symbolSet)
+        return symbolRepository.saveAll(symbolSet)
     }
 
     private fun persistNewExchanges(exchangeList: List<Exchange>) {
