@@ -5,14 +5,14 @@ import org.springframework.http.HttpHeaders
 import org.springframework.http.MediaType
 
 
-const val BASE_URL = "https://finnhub.io/api/v1/"
-const val TOKEN_KEY = "token"
+private const val BASE_URL = "https://finnhub.io/api/v1/"
+private const val TOKEN_KEY = "token"
 
 val TOKEN_VALUE: String = System.getenv("FINNHUB_API_KEY")
 val STOCK_EXCHANGE_URL = createURL("stock/exchange")
 val CRYPTO_EXCHANGE_URL = createURL("crypto/exchange")
 val STOCK_SYMBOL_URL = createURL("stock/symbol")
-val STOCK_CANDLE = createURL("stock/candle")
+val STOCK_CANDLE_URL = createURL("stock/candle")
 
 fun createURI(url: String, vararg parameters: Pair<String, String>): String {
     val uriBuilder = URIBuilder(url)

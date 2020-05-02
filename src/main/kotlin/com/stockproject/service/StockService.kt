@@ -7,6 +7,7 @@ import com.stockproject.entity.Symbol
 import com.stockproject.repository.ExchangeRepository
 import com.stockproject.repository.SymbolRepository
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.cache.annotation.Cacheable
 import org.springframework.stereotype.Service
 
 @Service
@@ -34,6 +35,7 @@ class StockService @Autowired constructor(
         return persistNewSymbols(stockSymbolList, exchange)
     }
 
+    @Cacheable("trending")
     fun getCandlesOfTrendingSymbols(count: Int, days: Long): List<Candle> {
         val trendingSymbols = symbolRepository.findMostTrendingSymbols(count)
         return trendingSymbols.flatMap { stockConsumer.getStockCandles(it, days) }
@@ -45,7 +47,7 @@ class StockService @Autowired constructor(
         return stockConsumer.getStockCandles(symbol, days)
     }
 
-    private fun persistNewSymbols(symbolList: List<Symbol>, exchange : Exchange) : List<Symbol> {
+    private fun persistNewSymbols(symbolList: List<Symbol>, exchange: Exchange): List<Symbol> {
         val persistedSymbols = symbolRepository.findAllSymbolsFromExchange(exchange)
         val symbolSet = persistedSymbols.toHashSet()
         symbolSet.addAll(symbolList)

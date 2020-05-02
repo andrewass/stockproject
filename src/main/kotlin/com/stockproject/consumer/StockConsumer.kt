@@ -58,7 +58,7 @@ class StockConsumer @Autowired constructor(
     fun getStockCandles(symbol: Symbol, days: Long): List<Candle> {
         val endDate = LocalDateTime.now()
         val startDate = endDate.minusDays(days)
-        val response = exchange(STOCK_CANDLE,
+        val response = exchange(STOCK_CANDLE_URL,
                 Pair("symbol", symbol.symbol), Pair("resolution", "D"),
                 Pair("from", startDate.toEpochSecond(ZoneOffset.UTC).toString()),
                 Pair("to", endDate.toEpochSecond(ZoneOffset.UTC).toString()))
