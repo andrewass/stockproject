@@ -1,9 +1,9 @@
 package com.stockproject.service
 
 import com.stockproject.consumer.StockConsumer
-import com.stockproject.entity.Candle
 import com.stockproject.entity.Exchange
 import com.stockproject.entity.Symbol
+import com.stockproject.entity.dto.SymbolCandles
 import com.stockproject.repository.ExchangeRepository
 import com.stockproject.repository.SymbolRepository
 import org.springframework.beans.factory.annotation.Autowired
@@ -36,13 +36,13 @@ class StockService @Autowired constructor(
     }
 
     @Cacheable("trending")
-    fun getCandlesOfTrendingSymbols(count: Int, days: Long): List<Candle> {
+    fun getCandlesOfTrendingSymbols(count: Int, days: Long): List<SymbolCandles> {
         val trendingSymbols = symbolRepository.findMostTrendingSymbols(count)
-        return trendingSymbols.flatMap { stockConsumer.getStockCandles(it, days) }
+        return trendingSymbols.mapNotNull { stockConsumer.getStockCandles(it, days) }
     }
 
-    fun getCandlesForSymbol(symbolName: String, days: Long): List<Candle> {
-        val symbol = symbolRepository.findBySymbol(symbolName) ?: return emptyList()
+    fun getCandlesForSymbol(symbolName: String, days: Long): SymbolCandles? {
+        val symbol = symbolRepository.findBySymbol(symbolName) ?: return null
         symbol.addSingleHit()
         return stockConsumer.getStockCandles(symbol, days)
     }

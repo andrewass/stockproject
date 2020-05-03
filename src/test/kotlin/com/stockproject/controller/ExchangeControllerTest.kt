@@ -1,8 +1,9 @@
 package com.stockproject.controller
 
-import com.stockproject.entity.Candle
 import com.stockproject.entity.Exchange
 import com.stockproject.entity.Symbol
+import com.stockproject.entity.dto.Candle
+import com.stockproject.entity.dto.SymbolCandles
 import com.stockproject.service.StockService
 import io.mockk.every
 import io.mockk.mockk
@@ -32,7 +33,9 @@ internal class ExchangeControllerTest {
 
     private val symbolList = listOf(Symbol(symbol = "A"), Symbol(symbol = "B"), Symbol(symbol = "C"))
 
-    private val candleList = listOf(Candle(id = 1L), Candle(id = 2L), Candle(id = 3L))
+    private val candleList = mutableListOf(Candle(), Candle(), Candle())
+
+    private val symbolCandles = SymbolCandles(symbol = symbolList[0], candles = candleList )
 
     @TestConfiguration
     class TestConfig {
@@ -100,13 +103,10 @@ internal class ExchangeControllerTest {
         val builder = MockMvcRequestBuilders
                 .get("/exchange/trending-stock-candles?count=10&days=15")
 
-        every { stockService.getCandlesOfTrendingSymbols(10, 15L) } returns candleList
+        every { stockService.getCandlesOfTrendingSymbols(10, 15L) } returns listOf(symbolCandles)
 
         mockMvc.perform(builder)
                 .andExpect(content().contentType("application/json"))
-                .andExpect(jsonPath("$[0].id").value("1"))
-                .andExpect(jsonPath("$[1].id").value("2"))
-                .andExpect(jsonPath("$[2].id").value("3"))
                 .andExpect(status().isOk)
     }
 
@@ -115,13 +115,10 @@ internal class ExchangeControllerTest {
         val builder = MockMvcRequestBuilders
                 .get("/exchange/stock-candles?symbol=AAPL&days=15")
 
-        every { stockService.getCandlesForSymbol("AAPL", 15) } returns candleList
+        every { stockService.getCandlesForSymbol("AAPL", 15) } returns symbolCandles
 
         mockMvc.perform(builder)
                 .andExpect(content().contentType("application/json"))
-                .andExpect(jsonPath("$[0].id").value("1"))
-                .andExpect(jsonPath("$[1].id").value("2"))
-                .andExpect(jsonPath("$[2].id").value("3"))
                 .andExpect(status().isOk)
     }
 }

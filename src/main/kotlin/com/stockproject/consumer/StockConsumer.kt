@@ -1,9 +1,10 @@
 package com.stockproject.consumer
 
 import com.stockproject.consumer.util.*
-import com.stockproject.entity.Candle
 import com.stockproject.entity.Exchange
 import com.stockproject.entity.Symbol
+import com.stockproject.entity.dto.Candle
+import com.stockproject.entity.dto.SymbolCandles
 import com.stockproject.entity.enum.ExchangeType
 import org.json.JSONArray
 import org.json.JSONObject
@@ -13,7 +14,9 @@ import org.springframework.http.HttpEntity
 import org.springframework.http.HttpMethod
 import org.springframework.stereotype.Component
 import org.springframework.web.client.RestTemplate
-import java.time.*
+import java.time.Instant
+import java.time.LocalDateTime
+import java.time.ZoneOffset
 
 @Component
 class StockConsumer @Autowired constructor(
@@ -55,7 +58,7 @@ class StockConsumer @Autowired constructor(
         }
     }
 
-    fun getStockCandles(symbol: Symbol, days: Long): List<Candle> {
+    fun getStockCandles(symbol: Symbol, days: Long): SymbolCandles? {
         val endDate = LocalDateTime.now()
         val startDate = endDate.minusDays(days)
         val response = exchange(STOCK_CANDLE_URL,
@@ -64,9 +67,9 @@ class StockConsumer @Autowired constructor(
                 Pair("to", endDate.toEpochSecond(ZoneOffset.UTC).toString()))
 
         return if (response.statusCode.is2xxSuccessful) {
-            convertToCandles(response.body!!, symbol)
+            convertToSymbolCandles(response.body!!, symbol)
         } else {
-            emptyList()
+            null
         }
     }
 
@@ -78,11 +81,11 @@ class StockConsumer @Autowired constructor(
                     String::class.java)
 
 
-    private fun convertToCandles(responseBody: String,symbol: Symbol): List<Candle> {
-        val candleList = mutableListOf<Candle>()
+    private fun convertToSymbolCandles(responseBody: String, symbol: Symbol): SymbolCandles? {
+        val symbolCandles = SymbolCandles(symbol = symbol)
         val jsonBody = JSONObject(responseBody)
-        if(jsonBody.getString("s") == noData){
-            return candleList
+        if (jsonBody.getString("s") == noData) {
+            return null
         }
         val closingPrice = jsonBody.getJSONArray("c")
         val highPrice = jsonBody.getJSONArray("h")
@@ -90,15 +93,14 @@ class StockConsumer @Autowired constructor(
         val timestamp = jsonBody.getJSONArray("t")
         val count = closingPrice.length()
         for (i in 0 until count) {
-            candleList.add(Candle(
-                    symbol = symbol,
+            symbolCandles.candles.add(Candle(
                     lowPrice = lowPrice.getDouble(i),
                     highPrice = highPrice.getDouble(i),
                     closingPrice = closingPrice.getDouble(i),
                     candleDate = getLocalDate(timestamp.getLong(i))
             ))
         }
-        return candleList
+        return symbolCandles
     }
 
     private fun convertToStockSymbolList(responseBody: String, exchange: Exchange): List<Symbol> {

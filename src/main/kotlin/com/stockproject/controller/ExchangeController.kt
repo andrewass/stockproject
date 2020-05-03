@@ -1,8 +1,8 @@
 package com.stockproject.controller
 
-import com.stockproject.entity.Candle
 import com.stockproject.entity.Exchange
 import com.stockproject.entity.Symbol
+import com.stockproject.entity.dto.SymbolCandles
 import com.stockproject.service.StockService
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 
+@CrossOrigin
 @RestController
 @RequestMapping("/exchange")
 class ExchangeController @Autowired constructor(
@@ -24,7 +25,7 @@ class ExchangeController @Autowired constructor(
             val startTime = System.currentTimeMillis()
             val symbols = stockService.getStockSymbols(it.exchangeName)
             val totalTime = System.currentTimeMillis() - startTime
-            log.info("Fetched ${symbols.size} symbols for exchange ${it.exchangeName} in ${totalTime/1000L} seconds")
+            log.info("Fetched ${symbols.size} symbols for exchange ${it.exchangeName} in ${totalTime / 1000L} seconds")
             Thread.sleep(1000L)
         }
         log.info("Population of stock symbols complete")
@@ -51,14 +52,14 @@ class ExchangeController @Autowired constructor(
 
     @GetMapping("/trending-stock-candles")
     fun getTrendingStockCandles(@RequestParam("count") count: Int, @RequestParam("days") days: Long):
-            ResponseEntity<List<Candle>> {
-        val candles = stockService.getCandlesOfTrendingSymbols(count, days)
-        return ResponseEntity(candles, HttpStatus.OK)
+            ResponseEntity<List<SymbolCandles>> {
+        val symbolCandles = stockService.getCandlesOfTrendingSymbols(count, days)
+        return ResponseEntity(symbolCandles, HttpStatus.OK)
     }
 
     @GetMapping("/stock-candles")
     fun getStockCandles(@RequestParam("symbol") symbol: String, @RequestParam("days") days: Long):
-            ResponseEntity<List<Candle>> {
+            ResponseEntity<SymbolCandles> {
         val candles = stockService.getCandlesForSymbol(symbol, days)
         return ResponseEntity(candles, HttpStatus.OK)
     }
