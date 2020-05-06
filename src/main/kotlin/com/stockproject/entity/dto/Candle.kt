@@ -10,4 +10,8 @@ data class Candle(
         val closingPrice: Double = 0.00,
 
         val candleDate: LocalDate = LocalDate.now()
-)
+) : Comparable<Candle> {
+
+    override fun compareTo(other: Candle) = other.candleDate.compareTo(candleDate)
+
+}

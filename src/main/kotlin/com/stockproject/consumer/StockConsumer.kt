@@ -100,6 +100,7 @@ class StockConsumer @Autowired constructor(
                     candleDate = getLocalDate(timestamp.getLong(i))
             ))
         }
+        symbolCandles.candles.sort()
         return symbolCandles
     }
 
