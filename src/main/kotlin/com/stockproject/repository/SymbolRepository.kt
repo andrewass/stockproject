@@ -15,5 +15,5 @@ interface SymbolRepository : JpaRepository<Symbol, Long> {
     @Query("SELECT * FROM T_SYMBOL s where s.exchange = ?1", nativeQuery = true)
     fun findAllSymbolsFromExchange(exchange: Exchange) : List<Symbol>
 
-    fun findBySymbol(symbol: String): Symbol?
+    fun findBySymbol(symbol: String): List<Symbol>
 }

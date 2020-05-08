@@ -59,7 +59,7 @@ class ExchangeController @Autowired constructor(
 
     @GetMapping("/stock-candles")
     fun getStockCandles(@RequestParam("symbol") symbol: String, @RequestParam("days") days: Long):
-            ResponseEntity<SymbolCandles> {
+            ResponseEntity<List<SymbolCandles>> {
         val candles = stockService.getCandlesForSymbol(symbol, days)
         return ResponseEntity(candles, HttpStatus.OK)
     }

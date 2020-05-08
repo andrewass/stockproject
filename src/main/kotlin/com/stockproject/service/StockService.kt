@@ -41,10 +41,15 @@ class StockService @Autowired constructor(
         return trendingSymbols.mapNotNull { stockConsumer.getStockCandles(it, days) }
     }
 
-    fun getCandlesForSymbol(symbolName: String, days: Long): SymbolCandles? {
-        val symbol = symbolRepository.findBySymbol(symbolName) ?: return null
-        symbol.addSingleHit()
-        return stockConsumer.getStockCandles(symbol, days)
+    fun getCandlesForSymbol(symbolName: String, days: Long): List<SymbolCandles> {
+        val symbols = symbolRepository.findBySymbol(symbolName)
+        symbols.forEach { it.addSingleHit() }
+        val symbolCandles = mutableListOf<SymbolCandles?>()
+        symbols.forEach {
+            it.addSingleHit()
+            symbolCandles.add(stockConsumer.getStockCandles(it, days))
+        }
+        return symbolCandles.filterNotNull()
     }
 
     private fun persistNewSymbols(symbolList: List<Symbol>, exchange: Exchange): List<Symbol> {
