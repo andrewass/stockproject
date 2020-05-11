@@ -42,7 +42,8 @@ class StockService @Autowired constructor(
     }
 
     fun getCandlesForSymbol(symbolName: String, days: Long): List<SymbolCandles> {
-        val symbols = symbolRepository.findBySymbol(symbolName)
+        val symbols = symbolRepository.findTop10BySymbolContainingIgnoreCase(symbolName).toHashSet()
+        symbols.addAll(symbolRepository.findTop10ByDescriptionContainingIgnoreCase(symbolName))
         symbols.forEach { it.addSingleHit() }
         val symbolCandles = mutableListOf<SymbolCandles?>()
         symbols.forEach {
