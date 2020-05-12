@@ -69,7 +69,7 @@ internal class StockServiceTest {
         every { symbolRepository.findAllSymbolsFromExchange(stockExchanges[0]) } returns emptyList()
         every { symbolRepository.saveAll(stockSymbols.toHashSet()) } returns stockSymbols
 
-        val symbolList = stockService.getStockSymbols(stockExchanges[0].exchangeName)
+        val symbolList = stockService.getStockSymbolsOfExchangeName(stockExchanges[0].exchangeName)
 
         assertEquals(4, symbolList.size)
         assertTrue(symbolList.containsAll(stockSymbols))
@@ -84,7 +84,7 @@ internal class StockServiceTest {
         every { symbolRepository.findAllSymbolsFromExchange(stockExchanges[0]) } returns stockSymbols
         every { symbolRepository.saveAll(capture(slot)) } returns stockSymbols
 
-        val symbolList = stockService.getStockSymbols(stockExchanges[0].exchangeName)
+        val symbolList = stockService.getStockSymbolsOfExchangeName(stockExchanges[0].exchangeName)
 
         assertEquals(4, slot.captured.size)
         assertTrue(slot.captured.containsAll(stockSymbols))

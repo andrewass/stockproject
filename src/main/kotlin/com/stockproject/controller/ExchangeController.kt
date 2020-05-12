@@ -23,7 +23,7 @@ class ExchangeController @Autowired constructor(
         val stockExchanges = stockService.getStockExchanges()
         stockExchanges.forEach {
             val startTime = System.currentTimeMillis()
-            val symbols = stockService.getStockSymbols(it.exchangeName)
+            val symbols = stockService.getStockSymbolsOfExchangeName(it.exchangeName)
             val totalTime = System.currentTimeMillis() - startTime
             log.info("Fetched ${symbols.size} symbols for exchange ${it.exchangeName} in ${totalTime / 1000L} seconds")
             Thread.sleep(1000L)
@@ -46,7 +46,7 @@ class ExchangeController @Autowired constructor(
 
     @GetMapping("/stock-symbols/{exchange}")
     fun getSymbols(@PathVariable("exchange") exchangeName: String): ResponseEntity<List<Symbol>> {
-        val symbols = stockService.getStockSymbols(exchangeName)
+        val symbols = stockService.getStockSymbolsOfExchangeName(exchangeName)
         return ResponseEntity(symbols, HttpStatus.OK)
     }
 

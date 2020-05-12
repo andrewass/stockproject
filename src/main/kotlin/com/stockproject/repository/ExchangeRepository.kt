@@ -8,7 +8,7 @@ import org.springframework.stereotype.Repository
 @Repository
 interface ExchangeRepository : JpaRepository<Exchange, Long> {
 
-    fun existsByCode(code: String): Boolean
+    fun findByCode(code : String) : Exchange?
 
     fun findByExchangeName(exchangeName : String) : Exchange?
 

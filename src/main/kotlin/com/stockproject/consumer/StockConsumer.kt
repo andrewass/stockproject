@@ -58,6 +58,17 @@ class StockConsumer @Autowired constructor(
         }
     }
 
+    fun getCryptoSymbols(exchange: Exchange) : List<Symbol> {
+        val response = exchange(CRYPTO_SYMBOL_URL, Pair("exchange", exchange.code))
+
+        return if (response.statusCode.is2xxSuccessful) {
+            convertToStockSymbolList(response.body!!, exchange)
+        } else {
+            log.error("Unable to fetch stock symbols : Statuscode ${response.statusCode}")
+            emptyList()
+        }
+    }
+
     fun getStockCandles(symbol: Symbol, days: Long): SymbolCandles? {
         val endDate = LocalDateTime.now()
         val startDate = endDate.minusDays(days)

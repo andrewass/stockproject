@@ -10,7 +10,10 @@ private const val TOKEN_KEY = "token"
 
 val TOKEN_VALUE: String = System.getenv("FINNHUB_API_KEY")
 val STOCK_EXCHANGE_URL = createURL("stock/exchange")
+
 val CRYPTO_EXCHANGE_URL = createURL("crypto/exchange")
+val CRYPTO_SYMBOL_URL = createURL("crypto/symbol")
+
 val STOCK_SYMBOL_URL = createURL("stock/symbol")
 val STOCK_CANDLE_URL = createURL("stock/candle")
 

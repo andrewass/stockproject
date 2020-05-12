@@ -47,7 +47,7 @@ internal class ExchangeControllerTest {
     fun `should return status OK when populating stock symbols`() {
         val builder = MockMvcRequestBuilders.get("/exchange/populate-stock-symbols")
 
-        every { stockService.getStockSymbols(any()) } returns emptyList()
+        every { stockService.getStockSymbolsOfExchangeName(any()) } returns emptyList()
         every { stockService.getStockExchanges() } returns stockExchangeList
 
         mockMvc.perform(builder)
@@ -88,7 +88,7 @@ internal class ExchangeControllerTest {
     fun `should return expected status and content of exchange symbols`() {
         val builder = MockMvcRequestBuilders.get("/exchange/stock-symbols/US")
 
-        every { stockService.getStockSymbols("US") } returns symbolList
+        every { stockService.getStockSymbolsOfExchangeName("US") } returns symbolList
 
         mockMvc.perform(builder)
                 .andExpect(status().isOk)

@@ -19,12 +19,12 @@ class CryptoController @Autowired constructor(
 
     @GetMapping("/populate-crypto-symbols")
     fun populateStockSymbols(): ResponseEntity<HttpStatus> {
-        val stockExchanges = stockService.getStockExchanges()
-        stockExchanges.forEach {
+        val cryptoExchanges = stockService.getCryptoExchanges()
+        cryptoExchanges.forEach {
             val startTime = System.currentTimeMillis()
-            val symbols = stockService.getStockSymbols(it.exchangeName)
+            val symbols = stockService.getCryptoSymbolsOfExchangeCode(it.code)
             val totalTime = System.currentTimeMillis() - startTime
-            log.info("Fetched ${symbols.size} symbols for exchange ${it.exchangeName} in ${totalTime / 1000L} seconds")
+            log.info("Fetched ${symbols.size} symbols for exchange ${it.code} in ${totalTime / 1000L} seconds")
             Thread.sleep(1000L)
         }
         log.info("Population of crypto symbols complete")

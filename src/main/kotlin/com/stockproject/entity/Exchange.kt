@@ -27,9 +27,10 @@ class Exchange(
     override fun equals(other: Any?): Boolean {
         if (other is Exchange) {
             return other.exchangeName == exchangeName
+                    && other.code == code
         }
         return false
     }
 
-    override fun hashCode() = exchangeName.hashCode()
+    override fun hashCode() = exchangeName.hashCode() + code.hashCode()
 }

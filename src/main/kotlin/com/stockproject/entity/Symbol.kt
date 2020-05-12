@@ -1,5 +1,6 @@
 package com.stockproject.entity
 
+import com.stockproject.entity.enum.ExchangeType
 import javax.persistence.*
 
 @Entity
@@ -17,7 +18,10 @@ class Symbol(
 
         @ManyToOne
         @JoinColumn(name = "EXCHANGE")
-        var exchange: Exchange? = null
+        var exchange: Exchange? = null,
+
+        @Enumerated(EnumType.STRING)
+        val exchangeType: ExchangeType? = null
 ) {
     private var hits = 0
 

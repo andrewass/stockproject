@@ -29,9 +29,15 @@ class StockService @Autowired constructor(
         return cryptoExchangeList
     }
 
-    fun getStockSymbols(exchangeName: String): List<Symbol> {
+    fun getStockSymbolsOfExchangeName(exchangeName: String): List<Symbol> {
         val exchange = exchangeRepository.findByExchangeName(exchangeName) ?: return emptyList()
         val stockSymbolList = stockConsumer.getStockSymbols(exchange)
+        return persistNewSymbols(stockSymbolList, exchange)
+    }
+
+    fun getCryptoSymbolsOfExchangeCode(exchangeCode: String) : List<Symbol> {
+        val exchange = exchangeRepository.findByCode(exchangeCode) ?: return emptyList()
+        val stockSymbolList = stockConsumer.getCryptoSymbols(exchange)
         return persistNewSymbols(stockSymbolList, exchange)
     }
 
