@@ -4,6 +4,7 @@ import com.stockproject.entity.Exchange
 import com.stockproject.entity.Symbol
 import com.stockproject.entity.dto.Candle
 import com.stockproject.entity.dto.SymbolCandles
+import com.stockproject.entity.enum.ExchangeType
 import com.stockproject.service.StockService
 import io.mockk.every
 import io.mockk.mockk
@@ -35,7 +36,7 @@ internal class ExchangeControllerTest {
 
     private val candleList = mutableListOf(Candle(), Candle(), Candle())
 
-    private val symbolCandles = SymbolCandles(symbol = symbolList[0], candles = candleList )
+    private val symbolCandles = SymbolCandles(symbol = symbolList[0], candles = candleList)
 
     @TestConfiguration
     class TestConfig {
@@ -103,7 +104,9 @@ internal class ExchangeControllerTest {
         val builder = MockMvcRequestBuilders
                 .get("/exchange/trending-stock-candles?count=10&days=15")
 
-        every { stockService.getCandlesOfTrendingSymbols(10, 15L) } returns listOf(symbolCandles)
+        every {
+            stockService.getCandlesOfTrendingSymbols(10, 15L, ExchangeType.STOCK)
+        } returns listOf(symbolCandles)
 
         mockMvc.perform(builder)
                 .andExpect(content().contentType("application/json"))
@@ -111,7 +114,7 @@ internal class ExchangeControllerTest {
     }
 
     @Test
-    fun `should return stock candles of a given symbol`(){
+    fun `should return stock candles of a given symbol`() {
         val builder = MockMvcRequestBuilders
                 .get("/exchange/stock-candles?symbol=AAPL&days=15")
 

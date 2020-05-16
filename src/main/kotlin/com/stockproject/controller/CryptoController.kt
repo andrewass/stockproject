@@ -1,6 +1,7 @@
 package com.stockproject.controller
 
 import com.stockproject.entity.dto.SymbolCandles
+import com.stockproject.entity.enum.ExchangeType
 import com.stockproject.service.StockService
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
@@ -34,7 +35,7 @@ class CryptoController @Autowired constructor(
     @GetMapping("/trending-crypto-candles")
     fun getTrendingStockCandles(@RequestParam("count") count: Int, @RequestParam("days") days: Long):
             ResponseEntity<List<SymbolCandles>> {
-        val symbolCandles = stockService.getCandlesOfTrendingSymbols(count, days)
+        val symbolCandles = stockService.getCandlesOfTrendingSymbols(count, days, ExchangeType.CRYPTO)
         return ResponseEntity(symbolCandles, HttpStatus.OK)
     }
 

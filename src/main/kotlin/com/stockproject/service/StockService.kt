@@ -4,6 +4,7 @@ import com.stockproject.consumer.StockConsumer
 import com.stockproject.entity.Exchange
 import com.stockproject.entity.Symbol
 import com.stockproject.entity.dto.SymbolCandles
+import com.stockproject.entity.enum.ExchangeType
 import com.stockproject.repository.ExchangeRepository
 import com.stockproject.repository.SymbolRepository
 import org.springframework.beans.factory.annotation.Autowired
@@ -35,15 +36,15 @@ class StockService @Autowired constructor(
         return persistNewSymbols(stockSymbolList, exchange)
     }
 
-    fun getCryptoSymbolsOfExchangeCode(exchangeCode: String) : List<Symbol> {
+    fun getCryptoSymbolsOfExchangeCode(exchangeCode: String): List<Symbol> {
         val exchange = exchangeRepository.findByCode(exchangeCode) ?: return emptyList()
         val stockSymbolList = stockConsumer.getCryptoSymbols(exchange)
         return persistNewSymbols(stockSymbolList, exchange)
     }
 
     @Cacheable("trending")
-    fun getCandlesOfTrendingSymbols(count: Int, days: Long): List<SymbolCandles> {
-        val trendingSymbols = symbolRepository.findMostTrendingSymbols(count)
+    fun getCandlesOfTrendingSymbols(count: Int, days: Long, exchangeType: ExchangeType): List<SymbolCandles> {
+        val trendingSymbols = symbolRepository.findMostTrendingSymbols(exchangeType)
         return trendingSymbols.mapNotNull { stockConsumer.getStockCandles(it, days) }
     }
 

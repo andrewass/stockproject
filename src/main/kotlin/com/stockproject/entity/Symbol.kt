@@ -18,10 +18,7 @@ class Symbol(
 
         @ManyToOne
         @JoinColumn(name = "EXCHANGE")
-        var exchange: Exchange? = null,
-
-        @Enumerated(EnumType.STRING)
-        val exchangeType: ExchangeType? = null
+        var exchange: Exchange? = null
 ) {
     private var hits = 0
 

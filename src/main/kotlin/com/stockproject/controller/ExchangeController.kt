@@ -3,6 +3,7 @@ package com.stockproject.controller
 import com.stockproject.entity.Exchange
 import com.stockproject.entity.Symbol
 import com.stockproject.entity.dto.SymbolCandles
+import com.stockproject.entity.enum.ExchangeType
 import com.stockproject.service.StockService
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
@@ -53,7 +54,7 @@ class ExchangeController @Autowired constructor(
     @GetMapping("/trending-stock-candles")
     fun getTrendingStockCandles(@RequestParam("count") count: Int, @RequestParam("days") days: Long):
             ResponseEntity<List<SymbolCandles>> {
-        val symbolCandles = stockService.getCandlesOfTrendingSymbols(count, days)
+        val symbolCandles = stockService.getCandlesOfTrendingSymbols(count, days, ExchangeType.STOCK)
         return ResponseEntity(symbolCandles, HttpStatus.OK)
     }
 
