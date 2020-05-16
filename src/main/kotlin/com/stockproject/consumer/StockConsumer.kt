@@ -58,7 +58,7 @@ class StockConsumer @Autowired constructor(
         }
     }
 
-    fun getCryptoSymbols(exchange: Exchange) : List<Symbol> {
+    fun getCryptoSymbols(exchange: Exchange): List<Symbol> {
         val response = exchange(CRYPTO_SYMBOL_URL, Pair("exchange", exchange.code))
 
         return if (response.statusCode.is2xxSuccessful) {
@@ -69,10 +69,10 @@ class StockConsumer @Autowired constructor(
         }
     }
 
-    fun getStockCandles(symbol: Symbol, days: Long): SymbolCandles? {
+    fun getStockCandles(symbol: Symbol, days: Long, exchangeType: ExchangeType?): SymbolCandles? {
         val endDate = LocalDateTime.now()
         val startDate = endDate.minusDays(days)
-        val response = exchange(STOCK_CANDLE_URL,
+        val response = exchange(getCandleForExchangeType(exchangeType),
                 Pair("symbol", symbol.symbol), Pair("resolution", "D"),
                 Pair("from", startDate.toEpochSecond(ZoneOffset.UTC).toString()),
                 Pair("to", endDate.toEpochSecond(ZoneOffset.UTC).toString()))
@@ -83,6 +83,13 @@ class StockConsumer @Autowired constructor(
             null
         }
     }
+
+    private fun getCandleForExchangeType(exchangeType: ExchangeType?) =
+            when (exchangeType) {
+                ExchangeType.CRYPTO -> CRYPTO_CANDLE_URL
+                ExchangeType.STOCK -> STOCK_CANDLE_URL
+                else -> "Invalid Exchangetype"
+            }
 
 
     private fun exchange(url: String, vararg parameters: Pair<String, String>) =

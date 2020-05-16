@@ -9,6 +9,7 @@ import com.stockproject.repository.ExchangeRepository
 import com.stockproject.repository.SymbolRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.cache.annotation.Cacheable
+import org.springframework.data.domain.PageRequest
 import org.springframework.stereotype.Service
 
 @Service
@@ -44,8 +45,8 @@ class StockService @Autowired constructor(
 
     @Cacheable("trending")
     fun getCandlesOfTrendingSymbols(count: Int, days: Long, exchangeType: ExchangeType): List<SymbolCandles> {
-        val trendingSymbols = symbolRepository.findMostTrendingSymbols(exchangeType)
-        return trendingSymbols.mapNotNull { stockConsumer.getStockCandles(it, days) }
+        val trendingSymbols = symbolRepository.findMostTrendingSymbols(exchangeType, PageRequest.of(0,count))
+        return trendingSymbols.mapNotNull { stockConsumer.getStockCandles(it, days, exchangeType) }
     }
 
     fun getCandlesForSymbol(symbolName: String, days: Long): List<SymbolCandles> {
@@ -55,7 +56,7 @@ class StockService @Autowired constructor(
         val symbolCandles = mutableListOf<SymbolCandles?>()
         symbols.forEach {
             it.addSingleHit()
-            symbolCandles.add(stockConsumer.getStockCandles(it, days))
+            symbolCandles.add(stockConsumer.getStockCandles(it, days, it.exchange!!.exchangeType))
         }
         return symbolCandles.filterNotNull()
     }
