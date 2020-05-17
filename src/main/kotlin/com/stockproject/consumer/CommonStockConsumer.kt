@@ -19,36 +19,38 @@ import java.time.LocalDateTime
 import java.time.ZoneOffset
 
 @Component
-class StockConsumer @Autowired constructor(
+class CommonStockConsumer @Autowired constructor(
         private val restTemplate: RestTemplate
 ) {
-    private val log = LoggerFactory.getLogger(StockConsumer::class.java)
+    private val log = LoggerFactory.getLogger(CommonStockConsumer::class.java)
     private val noData = "no_data"
 
-    fun getStockExchanges(): List<Exchange> {
-        val response = exchange(STOCK_EXCHANGE_URL)
+    /**
+     * Get a list of available exchanges from remote endpoint
+     *
+     * @param exchangeUrl The url used to fetch exchanges
+     * @return a list of exchanges converted into
+     */
+    fun getExchanges(exchangeUrl : String): List<Exchange> {
+        val response = exchange(exchangeUrl)
 
         return if (response.statusCode.is2xxSuccessful) {
-            convertToStockExchangeList(response.body!!)
+            when(exchangeUrl){
+                STOCK_EXCHANGE_PATH -> convertToStockExchangeList(response.body!!)
+                CRYPTO_EXCHANGE_PATH -> convertToCryptoExchangeList(response.body!!)
+                else -> emptyList()
+            }
         } else {
             log.error("Unable to fetch stock exchanges : Statuscode ${response.statusCode}")
             emptyList()
         }
     }
 
-    fun getCryptoExchanges(): List<Exchange> {
-        val response = exchange(CRYPTO_EXCHANGE_URL)
-
-        return if (response.statusCode.is2xxSuccessful) {
-            convertToCryptoExchangeList(response.body!!)
-        } else {
-            log.error("Unable to fetch crypto exchanges : Statuscode ${response.statusCode}")
-            emptyList()
-        }
-    }
-
+    /**
+     *
+     */
     fun getStockSymbols(exchange: Exchange): List<Symbol> {
-        val response = exchange(STOCK_SYMBOL_URL, Pair("exchange", exchange.code))
+        val response = exchange(STOCK_SYMBOL_PATH, Pair("exchange", exchange.code))
 
         return if (response.statusCode.is2xxSuccessful) {
             convertToStockSymbolList(response.body!!, exchange)
@@ -58,8 +60,11 @@ class StockConsumer @Autowired constructor(
         }
     }
 
+    /**
+     *
+     */
     fun getCryptoSymbols(exchange: Exchange): List<Symbol> {
-        val response = exchange(CRYPTO_SYMBOL_URL, Pair("exchange", exchange.code))
+        val response = exchange(CRYPTO_SYMBOL_PATH, Pair("exchange", exchange.code))
 
         return if (response.statusCode.is2xxSuccessful) {
             convertToStockSymbolList(response.body!!, exchange)
@@ -69,6 +74,9 @@ class StockConsumer @Autowired constructor(
         }
     }
 
+    /**
+     *
+     */
     fun getStockCandles(symbol: Symbol, days: Long, exchangeType: ExchangeType?): SymbolCandles? {
         val endDate = LocalDateTime.now()
         val startDate = endDate.minusDays(days)
@@ -86,8 +94,8 @@ class StockConsumer @Autowired constructor(
 
     private fun getUrlForExchangeType(exchangeType: ExchangeType?) =
             when (exchangeType) {
-                ExchangeType.CRYPTO -> CRYPTO_CANDLE_URL
-                ExchangeType.STOCK -> STOCK_CANDLE_URL
+                ExchangeType.CRYPTO -> CRYPTO_CANDLE_PATH
+                ExchangeType.STOCK -> STOCK_CANDLE_PATH
                 else -> "Invalid Exchangetype"
             }
 
@@ -163,5 +171,4 @@ class StockConsumer @Autowired constructor(
 
     private fun getLocalDate(epochTime: Long) =
             Instant.ofEpochSecond(epochTime).atZone(ZoneOffset.UTC).toLocalDate()
-
 }

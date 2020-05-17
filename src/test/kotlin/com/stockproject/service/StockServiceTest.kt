@@ -1,6 +1,8 @@
 package com.stockproject.service
 
-import com.stockproject.consumer.StockConsumer
+import com.stockproject.consumer.CommonStockConsumer
+import com.stockproject.consumer.util.CRYPTO_EXCHANGE_PATH
+import com.stockproject.consumer.util.STOCK_EXCHANGE_PATH
 import com.stockproject.entity.Exchange
 import com.stockproject.entity.Symbol
 import com.stockproject.repository.ExchangeRepository
@@ -24,10 +26,10 @@ internal class StockServiceTest {
     private lateinit var symbolRepository: SymbolRepository
 
     @MockK
-    private lateinit var stockConsumer: StockConsumer
+    private lateinit var commonStockConsumer: CommonStockConsumer
 
     @InjectMockKs
-    private lateinit var stockService: StockService
+    private lateinit var commonStockService: CommonStockService
 
     @BeforeEach
     private fun setUp() = MockKAnnotations.init(this)
@@ -44,32 +46,32 @@ internal class StockServiceTest {
 
     @Test
     fun `should return list of 3 stock exchanges from service`() {
-        every { stockConsumer.getStockExchanges() } returns getStockExchangeResponseList()
+        every { commonStockConsumer.getExchanges(STOCK_EXCHANGE_PATH) } returns getStockExchangeResponseList()
         every { exchangeRepository.findAll() } returns getStockExchangeResponseList()
 
-        val exchangeList = stockService.getStockExchanges()
+        val exchangeList = commonStockService.getExchanges(STOCK_EXCHANGE_PATH)
 
         assertEquals(4, exchangeList.size)
     }
 
     @Test
     fun `should return list of 4 crypto exchanges from service`() {
-        every { stockConsumer.getCryptoExchanges() } returns getCryptoExchangeResponseList()
+        every { commonStockConsumer.getExchanges(CRYPTO_EXCHANGE_PATH) } returns getCryptoExchangeResponseList()
         every { exchangeRepository.findAll() } returns getCryptoExchangeResponseList()
 
-        val exchangeList = stockService.getCryptoExchanges()
+        val exchangeList = commonStockService.getExchanges(CRYPTO_EXCHANGE_PATH)
 
         assertEquals(4, exchangeList.size)
     }
 
     @Test
     fun `should return list of 4 new stock symbols for given exchange`() {
-        every { stockConsumer.getStockSymbols(stockExchanges[0]) } returns stockSymbols
+        every { commonStockConsumer.getStockSymbols(stockExchanges[0]) } returns stockSymbols
         every { exchangeRepository.findByExchangeName(stockExchanges[0].exchangeName) } returns stockExchanges[0]
         every { symbolRepository.findAllSymbolsFromExchange(stockExchanges[0]) } returns emptyList()
         every { symbolRepository.saveAll(stockSymbols.toHashSet()) } returns stockSymbols
 
-        val symbolList = stockService.getStockSymbolsOfExchangeName(stockExchanges[0].exchangeName)
+        val symbolList = commonStockService.getStockSymbolsOfExchangeName(stockExchanges[0].exchangeName)
 
         assertEquals(4, symbolList.size)
         assertTrue(symbolList.containsAll(stockSymbols))
@@ -79,12 +81,12 @@ internal class StockServiceTest {
     fun `should return list of 4 previous persisted stock symbols for given exchange`() {
         val slot = slot<HashSet<Symbol>>()
 
-        every { stockConsumer.getStockSymbols(stockExchanges[0]) } returns stockSymbols
+        every { commonStockConsumer.getStockSymbols(stockExchanges[0]) } returns stockSymbols
         every { exchangeRepository.findByExchangeName(stockExchanges[0].exchangeName) } returns stockExchanges[0]
         every { symbolRepository.findAllSymbolsFromExchange(stockExchanges[0]) } returns stockSymbols
         every { symbolRepository.saveAll(capture(slot)) } returns stockSymbols
 
-        val symbolList = stockService.getStockSymbolsOfExchangeName(stockExchanges[0].exchangeName)
+        val symbolList = commonStockService.getStockSymbolsOfExchangeName(stockExchanges[0].exchangeName)
 
         assertEquals(4, slot.captured.size)
         assertTrue(slot.captured.containsAll(stockSymbols))

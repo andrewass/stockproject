@@ -9,19 +9,21 @@ private const val BASE_URL = "https://finnhub.io/api/v1/"
 private const val TOKEN_KEY = "token"
 private val TOKEN_VALUE: String = System.getenv("FINNHUB_API_KEY")
 
-const val STOCK_EXCHANGE_URL = "stock/exchange"
-const val CRYPTO_EXCHANGE_URL = "crypto/exchange"
+const val STOCK_EXCHANGE_PATH = "stock/exchange"
+const val CRYPTO_EXCHANGE_PATH = "crypto/exchange"
+const val FOREX_EXCHANGE_PATH = "forex/exchange"
 
-const val STOCK_SYMBOL_URL = "stock/symbol"
-const val CRYPTO_SYMBOL_URL = "crypto/symbol"
+const val STOCK_SYMBOL_PATH = "stock/symbol"
+const val CRYPTO_SYMBOL_PATH = "crypto/symbol"
+const val FOREX_SYMBOL_PATH = "forex/symbol"
 
-const val STOCK_CANDLE_URL = "stock/candle"
-const val CRYPTO_CANDLE_URL = "crypto/candle"
+const val STOCK_CANDLE_PATH = "stock/candle"
+const val CRYPTO_CANDLE_PATH = "crypto/candle"
+const val FOREX_CANDLE_PATH = "forex/candle"
 
 fun createURI(urlPath: String, vararg parameters: Pair<String, String>): String {
     val url = BASE_URL + urlPath
-    val uriComponentsBuilder = UriComponentsBuilder.fromHttpUrl(url)
-            .queryParam(TOKEN_KEY, TOKEN_VALUE)
+    val uriComponentsBuilder = UriComponentsBuilder.fromHttpUrl(url).queryParam(TOKEN_KEY, TOKEN_VALUE)
     for (parameter in parameters) {
         uriComponentsBuilder.queryParam(parameter.first, parameter.second)
     }

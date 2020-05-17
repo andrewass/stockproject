@@ -1,6 +1,6 @@
 package com.stockproject.service
 
-import com.stockproject.consumer.StockConsumer
+import com.stockproject.consumer.CommonStockConsumer
 import com.stockproject.entity.Exchange
 import com.stockproject.entity.Symbol
 import com.stockproject.entity.dto.SymbolCandles
@@ -13,40 +13,34 @@ import org.springframework.data.domain.PageRequest
 import org.springframework.stereotype.Service
 
 @Service
-class StockService @Autowired constructor(
+class CommonStockService @Autowired constructor(
         private val exchangeRepository: ExchangeRepository,
         private val symbolRepository: SymbolRepository,
-        private val stockConsumer: StockConsumer
+        private val commonStockConsumer: CommonStockConsumer
 ) {
 
-    fun getStockExchanges(): List<Exchange> {
-        val stockExchangeList = stockConsumer.getStockExchanges()
+    fun getExchanges(exchangePath : String): List<Exchange> {
+        val stockExchangeList = commonStockConsumer.getExchanges(exchangePath)
         persistNewExchanges(stockExchangeList)
         return stockExchangeList
     }
 
-    fun getCryptoExchanges(): List<Exchange> {
-        val cryptoExchangeList = stockConsumer.getCryptoExchanges()
-        persistNewExchanges(cryptoExchangeList)
-        return cryptoExchangeList
-    }
-
     fun getStockSymbolsOfExchangeName(exchangeName: String): List<Symbol> {
         val exchange = exchangeRepository.findByExchangeName(exchangeName) ?: return emptyList()
-        val stockSymbolList = stockConsumer.getStockSymbols(exchange)
+        val stockSymbolList = commonStockConsumer.getStockSymbols(exchange)
         return persistNewSymbols(stockSymbolList, exchange)
     }
 
     fun getCryptoSymbolsOfExchangeCode(exchangeCode: String): List<Symbol> {
         val exchange = exchangeRepository.findByCode(exchangeCode) ?: return emptyList()
-        val stockSymbolList = stockConsumer.getCryptoSymbols(exchange)
+        val stockSymbolList = commonStockConsumer.getCryptoSymbols(exchange)
         return persistNewSymbols(stockSymbolList, exchange)
     }
 
     @Cacheable("trending")
     fun getCandlesOfTrendingSymbols(count: Int, days: Long, exchangeType: ExchangeType): List<SymbolCandles> {
         val trendingSymbols = symbolRepository.findMostTrendingSymbols(exchangeType, PageRequest.of(0,count))
-        return trendingSymbols.mapNotNull { stockConsumer.getStockCandles(it, days, exchangeType) }
+        return trendingSymbols.mapNotNull { commonStockConsumer.getStockCandles(it, days, exchangeType) }
     }
 
     fun getCandlesForSymbol(symbolName: String, days: Long): List<SymbolCandles> {
@@ -56,7 +50,7 @@ class StockService @Autowired constructor(
         val symbolCandles = mutableListOf<SymbolCandles?>()
         symbols.forEach {
             it.addSingleHit()
-            symbolCandles.add(stockConsumer.getStockCandles(it, days, it.exchange!!.exchangeType))
+            symbolCandles.add(commonStockConsumer.getStockCandles(it, days, it.exchange!!.exchangeType))
         }
         return symbolCandles.filterNotNull()
     }
