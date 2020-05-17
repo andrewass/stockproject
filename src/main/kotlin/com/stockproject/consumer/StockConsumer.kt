@@ -72,7 +72,7 @@ class StockConsumer @Autowired constructor(
     fun getStockCandles(symbol: Symbol, days: Long, exchangeType: ExchangeType?): SymbolCandles? {
         val endDate = LocalDateTime.now()
         val startDate = endDate.minusDays(days)
-        val response = exchange(getCandleForExchangeType(exchangeType),
+        val response = exchange(getUrlForExchangeType(exchangeType),
                 Pair("symbol", symbol.symbol), Pair("resolution", "D"),
                 Pair("from", startDate.toEpochSecond(ZoneOffset.UTC).toString()),
                 Pair("to", endDate.toEpochSecond(ZoneOffset.UTC).toString()))
@@ -84,7 +84,7 @@ class StockConsumer @Autowired constructor(
         }
     }
 
-    private fun getCandleForExchangeType(exchangeType: ExchangeType?) =
+    private fun getUrlForExchangeType(exchangeType: ExchangeType?) =
             when (exchangeType) {
                 ExchangeType.CRYPTO -> CRYPTO_CANDLE_URL
                 ExchangeType.STOCK -> STOCK_CANDLE_URL
