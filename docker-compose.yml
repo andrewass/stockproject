@@ -1,8 +1,30 @@
 version: '3'
 
 services:
+  #Mysql Database for stock server
+  stock-db:
+    image: mysql:8.0
+    container_name: stock-db
+    environment:
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+      - MYSQL_USER=${MYSQL_USER}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
+    ports:
+      - 3306:3306
+
   #Spring Boot Stock server
   stock-server:
+    container_name: stockserver
     build: .
+    environment:
+      - FINNHUB_API_KEY=${FINNHUB_API_KEY}
+      - SPRING_DATASOURCE_URL=jdbc:mysql://stock-db:3306/stockdatabase?allowPublicKeyRetrieval=true
+      - SPRING_DATASOURCE_USERNAME=${MYSQL_USER}
+      - SPRING_DATASOURCE_PASSWORD=${MYSQL_PASSWORD}
     ports:
       - 8080:8080
+    depends_on:
+      - stock-db
+
+
