@@ -103,9 +103,9 @@
 
     <profiles>
         <profile>
-            <id>dev</id>
+            <id>mysql</id>
             <properties>
-                <activatedProperties>dev</activatedProperties>
+                <activatedProperties>mysql</activatedProperties>
             </properties>
             <activation>
                 <activeByDefault>true</activeByDefault>
@@ -115,6 +115,12 @@
             <id>docker</id>
             <properties>
                 <activatedProperties>docker</activatedProperties>
+            </properties>
+        </profile>
+        <profile>
+            <id>h2</id>
+            <properties>
+                <activatedProperties>h2</activatedProperties>
             </properties>
         </profile>
     </profiles>
